@@ -8,7 +8,7 @@ using namespace sl;
 
 int main()
 {
-    std::ifstream inputFile("../../sources/script.slang");
+    std::ifstream inputFile("sources/script.slang");
     std::stringstream bufferCode;
     bufferCode << inputFile.rdbuf();
 
