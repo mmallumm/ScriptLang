@@ -10,3 +10,8 @@ sl::TokenTypeDict tokenTypeTable = {
 };
 
 const sl::TokenTypeDict &sl::GetTokenTypeDict() { return tokenTypeTable; }
+
+bool sl::TokenType::IsValid() const
+{
+    return mName != nullptr;
+}

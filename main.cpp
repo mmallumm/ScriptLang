@@ -12,6 +12,6 @@ int main()
     std::stringstream bufferCode;
     bufferCode << inputFile.rdbuf();
 
-    sl::Lexer lex(bufferCode.str());
-    auto res = lex.LexAnalysis();
+    sl::Lexer lex;
+    auto res = lex.LexAnalysis(bufferCode.str());
 }

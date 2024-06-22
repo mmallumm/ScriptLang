@@ -1,51 +1,54 @@
 #include "lexer.h"
 
+#include <cassert>
+
 using namespace sl;
 
-Lexer::Lexer(std::string code) : mCode(code) 
-{ 
-    printf("Code: '%s'\n", code.c_str()); 
-}
-
-std::vector<Token> Lexer::LexAnalysis()
+std::vector<Token> Lexer::LexAnalysis(std::string code) const
 {
-    while (NextToken())
+    printf("Code: '%s'\n", code.c_str());
+
+    uint32_t pos = 0;
+    std::vector<Token> tokenList;
+
+    while (true)
     {
-        printf("Next token readen\n");
+        auto token = NextToken(code, pos);
+        if(!token.mType.IsValid()) {
+            break;
+        }
+        
+        printf("Next token readen, type: '%s', data: '%s'\n", token.mType.mName, token.mData.c_str());
+        tokenList.push_back(std::move(token));
     }
 
     std::vector<Token> filteredTokenList;
-    std::copy_if(mTokenList.begin(), mTokenList.end(), std::back_inserter(filteredTokenList),
+    std::copy_if(tokenList.begin(), tokenList.end(), std::back_inserter(filteredTokenList),
                  [](const Token &token) -> bool { return token.mType.mName != "SPACE"; });
-    mTokenList = filteredTokenList;
+    tokenList = filteredTokenList;
 
-    return mTokenList;
+    return tokenList;
 }
 
-bool Lexer::NextToken()
+Token Lexer::NextToken(const std::string &code, uint32_t &pos) const
 {
-    if (mPos >= mCode.length())
+    if (pos >= code.length())
     {
-        return false;
+        return Token{};
     }
 
     for (auto tokenType : GetTokenTypeDict())
     {
         const std::regex tokenRegEx = std::regex("^" + std::string(tokenType.second));
         std::smatch matches;
-        std::string curCode = mCode.substr(mPos);
+        std::string curCode = code.substr(pos);
         bool matchResult = std::regex_search(curCode, matches, tokenRegEx);
         if (matchResult && !matches[0].str().empty())
         {
-            Token token{TokenType{tokenType.first, tokenType.second}, matches[0].str(), mPos};
-            mTokenList.push_back(std::move(token));
-            mPos += matches[0].str().size();
-
-            printf("Token type is '%s'\n", tokenType.first);
-
-            return true;
+            pos += matches[0].str().size();
+            return Token{TokenType{tokenType.first, tokenType.second}, matches[0].str(), pos};
         }
     }
 
-    throw std::exception();
+    assert(false && "No token matched");
 }

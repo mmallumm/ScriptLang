@@ -14,17 +14,8 @@ namespace sl
 class Lexer
 {
   public:
-    Lexer(std::string code);
-
-    std::vector<Token> LexAnalysis();
-
-  private:
-    bool NextToken();
-
-  private:
-    std::string mCode;
-    int mPos = 0;
-    std::vector<Token> mTokenList;
+    std::vector<Token> LexAnalysis(std::string code) const;
+    Token NextToken(const std::string& code, uint32_t& pos) const;
 };
 } // namespace sl
 
